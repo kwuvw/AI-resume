@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:push-local": "prisma db push",
+    "db:push-turso": "DATABASE_URL=\"libsql://ai-resume-kwuvw.aws-us-east-1.turso.io\" tsx scripts/push-schema.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.17.4",
@@ -44,6 +46,7 @@
     "eslint-config-next": "16.2.9",
     "prisma": "^7.8.0",
     "tailwindcss": "^4",
+    "tsx": "^4.22.4",
     "typescript": "^5"
   }
 }
