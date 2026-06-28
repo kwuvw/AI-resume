@@ -1,0 +1,143 @@
+{
+  "nav": {
+    "analyze": "Analyze Resume",
+    "pricing": "Pricing",
+    "getStarted": "Get Started",
+    "language": "EN"
+  },
+  "landing": {
+    "heroTitle1": "Optimize Your Resume",
+    "heroTitle2": "with AI",
+    "heroSubtitle": "AI Resume Studio analyzes, scores, and improves your resume to pass ATS systems and land more interviews. Get results in seconds.",
+    "cta": "Analyze My Resume",
+    "learnMore": "Learn More",
+    "howItWorks": "How It Works",
+    "everythingYouNeed": "Everything You Need",
+    "readyTitle": "Ready to Land Your Dream Job?",
+    "readySubtitle": "Join thousands of job seekers who have improved their resume scores and landed more interviews with AI Resume Studio.",
+    "startFree": "Start Free Analysis",
+    "builtWith": "Built with AI to help you succeed."
+  },
+  "steps": {
+    "upload": {
+      "title": "Upload Resume",
+      "description": "Drop your PDF, DOCX, or paste your resume text."
+    },
+    "analyze": {
+      "title": "AI Analysis",
+      "description": "Our AI analyzes every section for ATS compatibility and improvement opportunities."
+    },
+    "results": {
+      "title": "Get Results",
+      "description": "Receive your optimized resume, scores, and actionable recommendations."
+    }
+  },
+  "features": {
+    "atsTitle": "ATS Optimization",
+    "atsDesc": "Rewrite your resume to pass Applicant Tracking Systems with AI-powered suggestions.",
+    "scoreTitle": "ATS Score",
+    "scoreDesc": "Get a detailed score breakdown showing exactly how your resume performs against ATS filters.",
+    "matchTitle": "Job Matching",
+    "matchDesc": "Compare your resume against any job description to see your match percentage and skill gaps.",
+    "coverTitle": "Cover Letter",
+    "coverDesc": "Generate a tailored cover letter that complements your resume for each application.",
+    "instantTitle": "Instant Analysis",
+    "instantDesc": "Get comprehensive feedback in seconds, not hours. AI-powered analysis at your fingertips.",
+    "privacyTitle": "Privacy First",
+    "privacyDesc": "Your data is encrypted and never shared. Delete your files anytime."
+  },
+  "upload": {
+    "pageTitle": "Analyze Your Resume",
+    "pageSubtitle": "Upload your resume and get instant AI-powered feedback",
+    "resumeTitle": "Resume Title (optional)",
+    "titlePlaceholder": "e.g., Software Engineer Resume",
+    "uploadFile": "Upload File",
+    "pasteText": "Paste Text",
+    "dragDrop": "Drag & drop your resume here, or",
+    "browse": "browse",
+    "fileFormats": "PDF, DOCX, or TXT (max 10MB)",
+    "jobDescription": "Job Description (optional)",
+    "jobDescriptionHint": "Adding a job description enables match analysis and tailored cover letter generation",
+    "jobDescriptionPlaceholder": "Paste the job description here to get a match score and tailored recommendations...",
+    "analyzeBtn": "Analyze Resume",
+    "uploading": "Uploading...",
+    "analyzing": "Analyzing with AI...",
+    "error": "Error"
+  },
+  "stages": {
+    "parsing": "Parsing resume structure...",
+    "extracting": "Extracting text and formatting...",
+    "skills": "Extracting skills and experience...",
+    "ats": "Running ATS optimization...",
+    "scoring": "Calculating scores...",
+    "matching": "Matching against job description...",
+    "coverLetter": "Generating cover letter...",
+    "weaknesses": "Analyzing weaknesses..."
+  },
+  "analysis": {
+    "title": "Analysis Results",
+    "analyzedOn": "Analyzed {date}",
+    "newAnalysis": "New Analysis",
+    "exportPdf": "Export PDF",
+    "atsScore": "ATS Score",
+    "jobMatch": "Job Match",
+    "noJobDesc": "No job description provided",
+    "hiringProbability": "Hiring Probability",
+    "atsBreakdown": "ATS Score Breakdown",
+    "changesMade": "Changes Made",
+    "skillMatch": "Skill Match",
+    "matched": "Matched",
+    "missing": "Missing",
+    "partial": "Partial",
+    "weaknesses": "Weaknesses",
+    "recommendations": "Recommendations",
+    "coverLetter": "Cover Letter",
+    "noWeaknesses": "No weaknesses detected. Great job!",
+    "noRecommendations": "No recommendations. Your resume looks good!",
+    "noCoverLetter": "No cover letter generated. Add a job description to generate one.",
+    "copy": "Copy",
+    "priority": "Priority",
+    "effort": "Effort",
+    "section": "Section"
+  },
+  "pricing": {
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "Start free and upgrade as you need more analyses. No hidden fees.",
+    "forever": "forever",
+    "perMonth": "/month",
+    "mostPopular": "Most Popular",
+    "cta": "Get Started",
+    "ctaPro": "Start Pro Trial",
+    "ctaEnterprise": "Contact Sales",
+    "free": {
+      "name": "Free",
+      "description": "Perfect for trying out the platform",
+      "f1": "3 resume analyses/month",
+      "f2": "ATS score",
+      "f3": "Basic recommendations",
+      "f4": "Job matching",
+      "f5": "Cover letter generation",
+      "f6": "Export PDF/DOCX"
+    },
+    "pro": {
+      "name": "Pro",
+      "description": "For active job seekers",
+      "f1": "50 analyses/month",
+      "f2": "Advanced ATS scoring",
+      "f3": "Detailed recommendations",
+      "f4": "Job matching (30/month)",
+      "f5": "Cover letters (30/month)",
+      "f6": "Export PDF & DOCX"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "description": "For career coaches & teams",
+      "f1": "Unlimited analyses",
+      "f2": "All Pro features",
+      "f3": "Priority support",
+      "f4": "API access",
+      "f5": "Custom branding",
+      "f6": "Bulk processing"
+    }
+  }
+}
