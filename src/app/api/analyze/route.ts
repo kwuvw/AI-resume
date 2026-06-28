@@ -4,11 +4,13 @@ import { calculateATSScore, calculateJobMatchScore, calculateHiringProbability }
 import { ResumeDataSchema } from "@/types/resume";
 import { prisma } from "@/lib/prisma";
 import { generateId, getScoreGrade } from "@/lib/utils";
+import { getSession } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
     const body = await request.json();
-    const { resumeId, type = "full_analysis", jobDescriptionText } = body;
+    const { resumeId, type = "full_analysis", jobDescriptionText, locale = "en" } = body;
 
     if (!resumeId) {
       return NextResponse.json(
@@ -29,6 +31,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Ownership check: if user is logged in, they can only analyze their own resumes
+    if (session && resume.userId && resume.userId !== session.userId) {
+      return NextResponse.json(
+        { error: "Access denied" },
+        { status: 403 }
+      );
+    }
+
     // Parse stored data
     const parsedData = JSON.parse(resume.parsedData);
     const resumeData = ResumeDataSchema.parse(parsedData);
@@ -39,6 +49,7 @@ export async function POST(request: NextRequest) {
       data: {
         id: analysisId,
         resumeId,
+        userId: session?.userId ?? null,
         type,
         status: "processing",
       },
@@ -46,7 +57,7 @@ export async function POST(request: NextRequest) {
 
     // Run AI analysis
     const startTime = Date.now();
-    const result = await runFullAnalysis(resumeData, jobDescriptionText);
+    const result = await runFullAnalysis(resumeData, jobDescriptionText, locale);
     const processingTime = Date.now() - startTime;
 
     // Calculate scores
@@ -92,6 +103,7 @@ export async function POST(request: NextRequest) {
       data: {
         id: reportId,
         analysisId,
+        userId: session?.userId ?? null,
         resumeId,
         atsScore,
         jobMatchScore,
@@ -129,9 +141,38 @@ export async function POST(request: NextRequest) {
       tokens_used: result.total_tokens,
     });
   } catch (error) {
-    console.error("Analysis error:", error);
+    console.error("═══════════════════════════════════════════");
+    console.error("Groq Pipeline Error:");
+    console.error("═══════════════════════════════════════════");
+
+    if (error && typeof error === "object") {
+      const e = error as Record<string, unknown>;
+      console.error("name:", e.name);
+      console.error("message:", e.message);
+      console.error("status:", e.status);
+      console.error("code:", e.code);
+      console.error("type:", e.type);
+
+      // OpenAI SDK errors often nest the response
+      if (e.error && typeof e.error === "object") {
+        console.error("response body:", JSON.stringify(e.error, null, 2));
+      }
+      if (e.response && typeof e.response === "object") {
+        const resp = e.response as Record<string, unknown>;
+        console.error("response status:", resp.status);
+        if (resp.body) console.error("response body:", resp.body);
+      }
+    } else {
+      console.error("raw error:", error);
+    }
+
+    console.error("stack:", error instanceof Error ? error.stack : "N/A");
+    console.error("═══════════════════════════════════════════");
+
+    const message =
+      error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to analyze resume" },
+      { error: "Failed to analyze resume", details: message },
       { status: 500 }
     );
   }

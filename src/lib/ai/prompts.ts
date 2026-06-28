@@ -1,9 +1,15 @@
 import { ResumeData } from "@/types/resume";
 
+// ─── Schema preamble (prepended to every JSON-mode prompt) ──────────────────
+
+const JSON_ONLY =
+  "IMPORTANT: Return ONLY a single valid JSON object. No markdown fences, no commentary, no text outside the JSON.";
+
 // ─── ATS Optimization Prompt ────────────────────────────────────────────────
 
 export function getATSOptimizationPrompt(): string {
   return `You are an expert ATS-optimized resume writer with 15 years of experience.
+${JSON_ONLY}
 
 TASK: Improve the resume text to maximize ATS (Applicant Tracking System) compatibility.
 
@@ -17,35 +23,19 @@ RULES:
 7. Avoid tables, columns, headers/footers, special characters
 8. Maximum 30% text change per section (conservative rewrite)
 
-OUTPUT: Return a JSON object with the following structure:
+OUTPUT SCHEMA (match exactly):
 {
   "optimized_resume": {
     "contact": { "name": "...", "email": "...", "phone": "...", "location": "...", "linkedin": "...", "website": "..." },
     "summary": "improved professional summary",
-    "experience": [
-      {
-        "title": "job title",
-        "company": "company name",
-        "location": "location",
-        "startDate": "start date",
-        "endDate": "end date",
-        "bullets": ["improved bullet 1", "improved bullet 2"]
-      }
-    ],
-    "education": [
-      {
-        "degree": "degree",
-        "institution": "institution",
-        "year": "year",
-        "gpa": "gpa (if present)"
-      }
-    ],
-    "skills": ["skill1", "skill2"],
+    "experience": [{ "title": "...", "company": "...", "location": "...", "startDate": "...", "endDate": "...", "bullets": ["..."] }],
+    "education": [{ "degree": "...", "institution": "...", "year": "...", "gpa": "..." }],
+    "skills": ["..."],
     "certifications": [],
     "languages": [],
     "projects": []
   },
-  "changes_summary": ["list of what was changed and why"]
+  "changes_summary": ["..."]
 }
 
 CRITICAL CONSTRAINTS:
@@ -58,6 +48,7 @@ CRITICAL CONSTRAINTS:
 
 export function getJobMatchPrompt(): string {
   return `You are an expert recruiter analyzing candidate-job fit with 20 years of experience.
+${JSON_ONLY}
 
 TASK: Analyze how well the resume matches the job description.
 
@@ -69,27 +60,15 @@ ANALYSIS STEPS:
 5. Identify keyword gaps
 6. Rate overall match
 
-OUTPUT: Return a JSON object with the following structure:
+OUTPUT SCHEMA (match exactly):
 {
   "overall_match": "strong" | "good" | "fair" | "poor",
-  "matched_skills": ["skill1", "skill2"],
-  "missing_skills": ["skill3", "skill4"],
-  "partial_skills": [
-    {
-      "skill": "skill name",
-      "note": "explanation of partial match"
-    }
-  ],
-  "experience_match": {
-    "required": "required years/level",
-    "candidate_has": "candidate's actual years/level",
-    "assessment": "above_level" | "at_level" | "below_level"
-  },
-  "keyword_gaps": ["keyword1", "keyword2"],
-  "recommendations": [
-    "specific recommendation 1",
-    "specific recommendation 2"
-  ]
+  "matched_skills": ["..."],
+  "missing_skills": ["..."],
+  "partial_skills": [{ "skill": "...", "note": "..." }],
+  "experience_match": { "required": "...", "candidate_has": "...", "assessment": "above_level" | "at_level" | "below_level" },
+  "keyword_gaps": ["..."],
+  "recommendations": ["..."]
 }
 
 RULES:
@@ -103,6 +82,7 @@ RULES:
 
 export function getCoverLetterPrompt(): string {
   return `You are a professional cover letter writer who has helped thousands of candidates land interviews.
+${JSON_ONLY}
 
 TASK: Generate a tailored cover letter for the specific job application.
 
@@ -113,7 +93,7 @@ STRUCTURE:
 4. Value proposition — what unique value the candidate brings
 5. Call to action — professional closing
 
-OUTPUT: Return a JSON object with the following structure:
+OUTPUT SCHEMA (match exactly):
 {
   "cover_letter": "full text of the cover letter (max 400 words)",
   "highlights_used": ["which resume points were emphasized"]
@@ -133,25 +113,14 @@ RULES:
 
 export function getWeaknessDetectionPrompt(): string {
   return `You are a career coach who specializes in resume optimization.
+${JSON_ONLY}
 
 TASK: Identify weaknesses and areas for improvement in this resume.
 
-OUTPUT: Return a JSON object with the following structure:
+OUTPUT SCHEMA (match exactly):
 {
-  "weaknesses": [
-    {
-      "text": "description of the weakness",
-      "severity": "critical" | "warning" | "info",
-      "section": "which section is affected"
-    }
-  ],
-  "recommendations": [
-    {
-      "text": "specific recommendation",
-      "priority": 1,
-      "effort": "low" | "medium" | "high"
-    }
-  ]
+  "weaknesses": [{ "text": "...", "severity": "critical" | "warning" | "info", "section": "..." }],
+  "recommendations": [{ "text": "...", "priority": 1, "effort": "low" | "medium" | "high" }]
 }
 
 SEVERITY GUIDELINES:
@@ -170,11 +139,13 @@ Be specific and actionable — not generic advice.`;
 
 export function getAnalysisSystemPrompt(): string {
   return `You are an AI resume analysis system. You must:
-1. Return ONLY valid JSON — no markdown, no explanations outside JSON
-2. Be factual and conservative — never invent information
-3. Base all assessments on evidence from the resume
-4. Use structured output schemas exactly as specified
-5. If information is missing, use empty arrays or null — do not guess`;
+1. Return ONLY valid JSON — no markdown code fences, no explanations outside JSON
+2. The JSON must match the exact schema specified in the user prompt
+3. Be factual and conservative — never invent information
+4. Base all assessments on evidence from the resume
+5. Use structured output schemas exactly as specified
+6. If information is missing, use empty arrays or null — do not guess
+7. Never wrap JSON in \`\`\`json blocks — output raw JSON only`;
 }
 
 // ─── Prompt Builder ─────────────────────────────────────────────────────────
@@ -183,7 +154,13 @@ export function buildATSPrompt(resumeData: ResumeData): string {
   return `RESUME DATA:
 ${JSON.stringify(resumeData, null, 2)}
 
-Please optimize this resume for ATS systems following the rules above.`;
+EXPECTED OUTPUT SCHEMA:
+{
+  "optimized_resume": { "contact": { "name": "", "email": "", "phone": "", "location": "", "linkedin": "", "website": "" }, "summary": "", "experience": [{ "title": "", "company": "", "location": "", "startDate": "", "endDate": "", "bullets": [""] }], "education": [{ "degree": "", "institution": "", "year": "", "gpa": "" }], "skills": [""], "certifications": [], "languages": [], "projects": [] },
+  "changes_summary": [""]
+}
+
+Return ONLY valid JSON matching the schema above.`;
 }
 
 export function buildJobMatchPrompt(
@@ -196,7 +173,18 @@ ${JSON.stringify(resumeData, null, 2)}
 JOB DESCRIPTION:
 ${jobDescription}
 
-Please analyze how well this resume matches the job description.`;
+EXPECTED OUTPUT SCHEMA:
+{
+  "overall_match": "strong" | "good" | "fair" | "poor",
+  "matched_skills": [""],
+  "missing_skills": [""],
+  "partial_skills": [{ "skill": "", "note": "" }],
+  "experience_match": { "required": "", "candidate_has": "", "assessment": "above_level" | "at_level" | "below_level" },
+  "keyword_gaps": [""],
+  "recommendations": [""]
+}
+
+Return ONLY valid JSON matching the schema above.`;
 }
 
 export function buildCoverLetterPrompt(
@@ -212,12 +200,24 @@ ${jobDescription}
 
 ${companyName ? `COMPANY: ${companyName}` : ""}
 
-Please generate a tailored cover letter.`;
+EXPECTED OUTPUT SCHEMA:
+{
+  "cover_letter": "full cover letter text",
+  "highlights_used": [""]
+}
+
+Return ONLY valid JSON matching the schema above.`;
 }
 
 export function buildWeaknessPrompt(resumeData: ResumeData): string {
   return `RESUME DATA:
 ${JSON.stringify(resumeData, null, 2)}
 
-Please identify weaknesses and provide recommendations.`;
+EXPECTED OUTPUT SCHEMA:
+{
+  "weaknesses": [{ "text": "", "severity": "critical" | "warning" | "info", "section": "" }],
+  "recommendations": [{ "text": "", "priority": 1, "effort": "low" | "medium" | "high" }]
+}
+
+Return ONLY valid JSON matching the schema above.`;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getScoreColor, getScoreGrade } from "@/lib/utils";
+import { getScoreGrade } from "@/lib/utils";
 
 interface ScoreRingProps {
   score: number;
@@ -10,6 +10,20 @@ interface ScoreRingProps {
   label?: string;
   showGrade?: boolean;
   delay?: number;
+}
+
+function scoreToStrokeColor(score: number): string {
+  if (score >= 80) return "#3fb950";
+  if (score >= 60) return "#d29922";
+  if (score >= 40) return "#db6d28";
+  return "#f85149";
+}
+
+function scoreToTextClass(score: number): string {
+  if (score >= 80) return "text-[var(--success)]";
+  if (score >= 60) return "text-[var(--warning)]";
+  if (score >= 40) return "text-orange-500";
+  return "text-[var(--danger)]";
 }
 
 export function ScoreRing({
@@ -46,49 +60,57 @@ export function ScoreRing({
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (animatedScore / 100) * circumference;
-  const colorClass = getScoreColor(score);
+  const strokeColor = scoreToStrokeColor(score);
+  const textClass = scoreToTextClass(score);
   const grade = getScoreGrade(score);
 
   return (
     <div className="flex flex-col items-center gap-2">
       <div className="relative" style={{ width: size, height: size }}>
-        <svg width={size} height={size} className="-rotate-90">
+        <svg
+          width={size}
+          height={size}
+          className="-rotate-90 overflow-visible"
+        >
+          {/* Background track — crisp neutral line */}
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="currentColor"
+            stroke="var(--border)"
             strokeWidth={strokeWidth}
-            className="text-border-solid opacity-30"
+            opacity={0.5}
           />
+          {/* Active progress — solid color, no glow */}
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
             fill="none"
-            stroke="currentColor"
+            stroke={strokeColor}
             strokeWidth={strokeWidth}
             strokeDasharray={circumference}
             strokeDashoffset={offset}
             strokeLinecap="round"
-            className={`${colorClass} transition-none`}
-            style={{
-              filter: `drop-shadow(0 0 8px currentColor)`,
-            }}
+            className="transition-none"
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className={`font-bold text-3xl ${colorClass}`}>
+          <span className={`font-bold text-3xl font-mono ${textClass}`}>
             {animatedScore}
           </span>
           {showGrade && (
-            <span className="text-xs text-muted-foreground font-medium">{grade}</span>
+            <span className="text-xs text-muted-foreground font-medium">
+              {grade}
+            </span>
           )}
         </div>
       </div>
       {label && (
-        <span className="text-sm text-muted-foreground font-medium">{label}</span>
+        <span className="text-sm text-muted-foreground font-medium">
+          {label}
+        </span>
       )}
     </div>
   );

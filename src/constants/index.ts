@@ -42,12 +42,12 @@ export const ALLOWED_FILE_TYPES = [
 ] as const;
 export const ALLOWED_EXTENSIONS = [".pdf", ".docx", ".txt"] as const;
 
-// ─── AI Models ──────────────────────────────────────────────────────────────
+// ─── AI Models (OpenRouter) ────────────────────────────────────────────────
 
 export const AI_MODELS = {
-  FAST: "gpt-4o-mini",
-  STANDARD: "gpt-4o",
-  CHEAP: "gemini-2.0-flash",
+  FAST: "deepseek/deepseek-chat",
+  STANDARD: "deepseek/deepseek-chat",
+  CHEAP: "meta-llama/llama-3.1-8b-instruct:free",
 } as const;
 
 export const MODEL_TEMPERATURES = {

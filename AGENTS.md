@@ -5,7 +5,7 @@
 - **Next.js 16** (App Router) + TypeScript strict
 - **Prisma 7** with `@prisma/adapter-libsql` (SQLite via libsql) — NOT the traditional Prisma setup
 - **Tailwind CSS 4** (not v3 — uses `@import "tailwindcss"` syntax, no `tailwind.config.js`)
-- **OpenAI SDK v6** for AI features
+- **OpenAI SDK v6** for AI features (pointed at OpenRouter via `OPENAI_API_BASE_URL`)
 
 ## Critical Setup
 
@@ -21,7 +21,8 @@
 
 Required in `.env`:
 - `DATABASE_URL` — defaults to `file:./dev.db` (SQLite)
-- `OPENAI_API_KEY` — required for AI analysis features
+- `OPENAI_API_KEY` — OpenRouter API key (https://openrouter.ai/keys)
+- `OPENAI_API_BASE_URL` — set to `https://openrouter.ai/api/v1`
 
 ## Commands
 
@@ -66,4 +67,6 @@ src/
 - `pdf-parse` v2 exports `PDFParse` class (not default function) — see `src/lib/parser/index.ts`
 - Prisma 7 types: `PrismaClient` constructor requires `{ adapter }` — bare `new PrismaClient()` fails at runtime
 - OpenAI streaming types: `delta.content` may be `Uint8Array` — cast with `String()` before `encoder.encode()`
-- SQLite file lives at `prisma/dev.db` — not created until first migration
+- SQLite file lives at `./dev.db` (project root) — created by `prisma db push`, not `prisma migrate`
+- OpenRouter requires `HTTP-Referer` and `X-Title` headers — set in client singleton
+- JSON extraction fallback in `callAI` handles models that don't support `response_format: { type: "json_object" }`

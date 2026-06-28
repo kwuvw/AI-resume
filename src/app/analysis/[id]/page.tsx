@@ -182,7 +182,7 @@ export default function AnalysisPage() {
             variants={stagger}
           >
             {/* ATS Score */}
-            <motion.div variants={fadeUp} className="glass rounded-2xl p-6 text-center">
+            <motion.div variants={fadeUp} className="card p-6 text-center">
               <div className="flex items-center justify-center gap-2 mb-5">
                 <Target className="h-5 w-5 text-primary" />
                 <h3 className="text-sm font-medium">{t.analysis.atsScore}</h3>
@@ -194,7 +194,7 @@ export default function AnalysisPage() {
             </motion.div>
 
             {/* Job Match */}
-            <motion.div variants={fadeUp} className="glass rounded-2xl p-6 text-center">
+            <motion.div variants={fadeUp} className="card p-6 text-center">
               <div className="flex items-center justify-center gap-2 mb-5">
                 <BarChart3 className="h-5 w-5 text-primary" />
                 <h3 className="text-sm font-medium">{t.analysis.jobMatch}</h3>
@@ -214,7 +214,7 @@ export default function AnalysisPage() {
             </motion.div>
 
             {/* Hiring Probability */}
-            <motion.div variants={fadeUp} className="glass rounded-2xl p-6 text-center">
+            <motion.div variants={fadeUp} className="card p-6 text-center">
               <div className="flex items-center justify-center gap-2 mb-5">
                 <TrendingUp className="h-5 w-5 text-primary" />
                 <h3 className="text-sm font-medium">{t.analysis.hiringProbability}</h3>
@@ -228,7 +228,7 @@ export default function AnalysisPage() {
 
           {/* ATS Breakdown */}
           <motion.div
-            className="glass rounded-2xl p-6 mb-8"
+            className="card p-6 mb-8"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3, ease: EASE_APPLE }}
@@ -271,7 +271,7 @@ export default function AnalysisPage() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25, ease: EASE_APPLE }}
-              className="glass rounded-2xl p-6"
+              className="card p-6"
             >
               {/* Overview */}
               {activeTab === "overview" && (

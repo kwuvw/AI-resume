@@ -3,9 +3,11 @@ import { parseResume } from "@/lib/parser";
 import { generateId, hashContent } from "@/lib/utils";
 import { MAX_FILE_SIZE, ALLOWED_EXTENSIONS } from "@/constants";
 import { prisma } from "@/lib/prisma";
+import { getSession } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await getSession();
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     const text = formData.get("text") as string | null;
@@ -54,6 +56,7 @@ export async function POST(request: NextRequest) {
       const resume = await prisma.resume.create({
         data: {
           id: resumeId,
+          userId: session?.userId ?? null,
           title,
           rawText,
           parsedData: JSON.stringify(result.parsed),
@@ -84,6 +87,7 @@ export async function POST(request: NextRequest) {
       const resume = await prisma.resume.create({
         data: {
           id: resumeId,
+          userId: session?.userId ?? null,
           title,
           rawText,
           parsedData: JSON.stringify(result.parsed),
@@ -108,8 +112,10 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Upload error:", error);
+    const message =
+      error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
-      { error: "Failed to process resume" },
+      { error: "Failed to process resume", details: message },
       { status: 500 }
     );
   }

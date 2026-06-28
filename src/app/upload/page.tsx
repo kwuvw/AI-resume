@@ -28,7 +28,7 @@ const stages = [
 
 export default function UploadPage() {
   const router = useRouter();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { addToast } = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [textInput, setTextInput] = useState("");
@@ -119,6 +119,7 @@ export default function UploadPage() {
           resumeId,
           type: "full_analysis",
           jobDescriptionText: jobDescription || undefined,
+          locale,
         }),
       });
 

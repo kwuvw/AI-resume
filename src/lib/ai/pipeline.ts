@@ -5,7 +5,6 @@ import {
   getJobMatchPrompt,
   getCoverLetterPrompt,
   getWeaknessDetectionPrompt,
-  getAnalysisSystemPrompt,
   buildATSPrompt,
   buildJobMatchPrompt,
   buildCoverLetterPrompt,
@@ -13,23 +12,30 @@ import {
 } from "./prompts";
 import { AI_MODELS, MODEL_TEMPERATURES } from "@/constants";
 
-// ─── Validation ─────────────────────────────────────────────────────────────
+type Locale = "en" | "ru";
 
-function validateOutput<T>(data: T, schema: { parse: (v: unknown) => T }): T {
-  try {
-    return schema.parse(data);
-  } catch (error) {
-    console.error("AI output validation failed:", error);
-    throw new Error("AI output did not match expected schema");
+// ─── Language instruction injector ──────────────────────────────────────────
+
+function langInstruction(locale: Locale): string {
+  if (locale === "ru") {
+    return `
+CRITICAL LANGUAGE RULE: You MUST write ALL output text entirely in fluent Russian (русский язык).
+This includes: every string inside "changes_summary", every "text" field in "weaknesses" and "recommendations",
+the "cover_letter" body, all "note" fields, and all "recommendations" strings.
+Do NOT mix English and Russian. Every single text field must be 100% Russian.
+The resume content itself (names, companies, skills) should stay as-is if originally in English.
+`;
   }
+  return "";
 }
 
 // ─── ATS Optimization Pipeline ──────────────────────────────────────────────
 
 export async function runATSOptimization(
-  resumeData: ResumeData
+  resumeData: ResumeData,
+  locale: Locale = "en"
 ): Promise<{ output: ATSOutput; tokens: number }> {
-  const systemPrompt = getATSOptimizationPrompt();
+  const systemPrompt = getATSOptimizationPrompt() + langInstruction(locale);
   const userPrompt = buildATSPrompt(resumeData);
 
   const { data, tokens } = await callAI<ATSOutput>(systemPrompt, userPrompt, {
@@ -38,21 +44,17 @@ export async function runATSOptimization(
     maxTokens: 4000,
   });
 
-  // Validate output
-  const validated = validateOutput(data, {
-    parse: (v: unknown) => v as ATSOutput,
-  });
-
-  return { output: validated, tokens };
+  return { output: data, tokens };
 }
 
 // ─── Job Match Pipeline ─────────────────────────────────────────────────────
 
 export async function runJobMatch(
   resumeData: ResumeData,
-  jobDescription: string
+  jobDescription: string,
+  locale: Locale = "en"
 ): Promise<{ output: JobMatchOutput; tokens: number }> {
-  const systemPrompt = getJobMatchPrompt();
+  const systemPrompt = getJobMatchPrompt() + langInstruction(locale);
   const userPrompt = buildJobMatchPrompt(resumeData, jobDescription);
 
   const { data, tokens } = await callAI<JobMatchOutput>(systemPrompt, userPrompt, {
@@ -69,9 +71,10 @@ export async function runJobMatch(
 export async function runCoverLetter(
   resumeData: ResumeData,
   jobDescription: string,
-  companyName?: string
+  companyName?: string,
+  locale: Locale = "en"
 ): Promise<{ output: CoverLetterOutput; tokens: number }> {
-  const systemPrompt = getCoverLetterPrompt();
+  const systemPrompt = getCoverLetterPrompt() + langInstruction(locale);
   const userPrompt = buildCoverLetterPrompt(resumeData, jobDescription, companyName);
 
   const { data, tokens } = await callAI<CoverLetterOutput>(systemPrompt, userPrompt, {
@@ -86,9 +89,10 @@ export async function runCoverLetter(
 // ─── Weakness Detection Pipeline ────────────────────────────────────────────
 
 export async function runWeaknessDetection(
-  resumeData: ResumeData
+  resumeData: ResumeData,
+  locale: Locale = "en"
 ): Promise<{ weaknesses: Weakness[]; recommendations: Recommendation[]; tokens: number }> {
-  const systemPrompt = getWeaknessDetectionPrompt();
+  const systemPrompt = getWeaknessDetectionPrompt() + langInstruction(locale);
   const userPrompt = buildWeaknessPrompt(resumeData);
 
   const { data, tokens } = await callAI<{
@@ -117,26 +121,24 @@ export interface FullAnalysisResult {
 
 export async function runFullAnalysis(
   resumeData: ResumeData,
-  jobDescription?: string | null
+  jobDescription?: string | null,
+  locale: Locale = "en"
 ): Promise<FullAnalysisResult> {
   const totalTokens = { value: 0 };
 
-  // Step 1: ATS Optimization (always runs)
-  const atsResult = await runATSOptimization(resumeData);
+  const atsResult = await runATSOptimization(resumeData, locale);
   totalTokens.value += atsResult.tokens;
 
-  // Step 2: Weakness Detection (always runs)
-  const weaknessResult = await runWeaknessDetection(resumeData);
+  const weaknessResult = await runWeaknessDetection(resumeData, locale);
   totalTokens.value += weaknessResult.tokens;
 
-  // Step 3: Job Match + Cover Letter (only if JD provided)
   let matchResult: JobMatchOutput | null = null;
   let coverLetterResult: CoverLetterOutput | null = null;
 
   if (jobDescription) {
     const [match, coverLetter] = await Promise.all([
-      runJobMatch(resumeData, jobDescription),
-      runCoverLetter(resumeData, jobDescription),
+      runJobMatch(resumeData, jobDescription, locale),
+      runCoverLetter(resumeData, jobDescription, undefined, locale),
     ]);
     matchResult = match.output;
     coverLetterResult = coverLetter.output;

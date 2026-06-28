@@ -8,20 +8,22 @@ export function LanguageSwitcher() {
   const { locale, setLocale } = useI18n();
 
   return (
-    <div className="flex items-center gap-1 p-1 rounded-xl glass-light">
+    <div className="flex items-center gap-0.5 p-0.5 rounded-md bg-secondary/50">
       {(["en", "ru"] as const).map((l) => (
         <button
           key={l}
           onClick={() => setLocale(l)}
-          className={`relative px-3 py-1.5 text-xs font-medium rounded-lg transition-colors duration-200 ${
-            locale === l ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+          className={`relative px-2 py-1 text-xs font-mono font-medium rounded transition-colors duration-150 ${
+            locale === l
+              ? "text-foreground"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           {locale === l && (
             <motion.div
               layoutId="lang-switcher"
-              className="absolute inset-0 bg-secondary rounded-lg"
-              transition={{ duration: 0.25, ease: EASE_APPLE }}
+              className="absolute inset-0 bg-background rounded border border-border"
+              transition={{ duration: 0.2, ease: EASE_APPLE }}
             />
           )}
           <span className="relative z-10 uppercase">{l}</span>
